@@ -3,17 +3,121 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+
 /**
  *
  * @author conbotngungoc
  */
+class VehicleData {
+    private String tenXe;
+    private String hangXe;
+    private String ngayGio;
+    private double giaNhap;
+    private boolean isMoi;
+
+    // Constructors
+    public VehicleData(String tenXe, String hangXe, String ngayGio, double giaNhap, boolean isMoi) {
+        this.tenXe = tenXe;
+        this.hangXe = hangXe;
+        this.ngayGio = ngayGio;
+        this.giaNhap = giaNhap;
+        this.isMoi = isMoi;
+    }
+
+    // Getters and Setters (Alt + Insert in NetBeans to generate them)
+
+    public String getTenXe() {
+        return tenXe;
+    }
+
+    public void setTenXe(String tenXe) {
+        this.tenXe = tenXe;
+    }
+
+    public String getHangXe() {
+        return hangXe;
+    }
+
+    public void setHangXe(String hangXe) {
+        this.hangXe = hangXe;
+    }
+
+    public String getNgayGio() {
+        return ngayGio;
+    }
+
+    public void setNgayGio(String ngayGio) {
+        this.ngayGio = ngayGio;
+    }
+
+    public double getGiaNhap() {
+        return giaNhap;
+    }
+
+    public void setGiaNhap(double giaNhap) {
+        this.giaNhap = giaNhap;
+    }
+
+    public boolean isMoi() {
+        return isMoi;
+    }
+
+    public void setMoi(boolean moi) {
+        isMoi = moi;
+    }
+}
+
 public class input extends javax.swing.JFrame {
 
     /**
      * Creates new form NewJFrame
      */
+    ArrayList<VehicleData> vehicleList = new ArrayList<>();
     public input() {
         initComponents();
+        setupTableListener();
+    }
+    private void setupTableListener() {
+        jTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                int selectedRow = jTable.getSelectedRow();
+
+                if (selectedRow != -1) {
+                    // Hiển thị thông tin của hàng đã chọn
+                    displaySelectedRowInfo(selectedRow);
+                }
+            }
+        });
+        jTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int selectedRow = jTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    displaySelectedRowInfo(selectedRow);
+                }
+            }
+        });
+    }
+    private void displaySelectedRowInfo(int selectedRow) {
+        // Lấy thông tin của hàng đã chọn
+        // Lấy thông tin của hàng đã chọn
+        VehicleData selectedVehicle = vehicleList.get(selectedRow);
+
+        // Hiển thị thông tin vào các ô tương ứng
+        jtenxe.setText(selectedVehicle.getTenXe());
+        jComboBox1.setSelectedItem(selectedVehicle.getHangXe());
+        jngaygio.setText(selectedVehicle.getNgayGio());
+        jgianhap.setValue(selectedVehicle.getGiaNhap());
+        jCheckBox1.setSelected(selectedVehicle.isMoi());
+        jCheckBox2.setSelected(!selectedVehicle.isMoi());
     }
 
     /**
@@ -144,9 +248,19 @@ public class input extends javax.swing.JFrame {
         });
 
         jnhapmoi.setText("Nhập mới");
+        jnhapmoi.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jnhapmoiActionPerformed(evt);
+            }
+        });
 
         jCheckBox1.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
         jCheckBox1.setText(" Mới");
+        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox1ActionPerformed(evt);
+            }
+        });
 
         jCheckBox2.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
         jCheckBox2.setText(" Cũ");
@@ -297,21 +411,138 @@ public class input extends javax.swing.JFrame {
     private void jtenxeActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code he
     }
+    private boolean isAlpha(String str) {
+        return str.matches("^[a-zA-Z ]+$");
+    }
 
     private void jthemActionPerformed(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
+        String tenXe = jtenxe.getText();
+        if (!isAlpha(tenXe)) {
+            // Tên không hợp lệ, hiển thị thông báo lỗi
+            JOptionPane.showMessageDialog(this, "Tên không hợp lệ! Hãy chỉ nhập chữ cái.");
+            return;  // Thoát khỏi phương thức nếu tên không hợp lệ
+        }
+        String hangXe = jComboBox1.getSelectedItem().toString();
+
+
+        String ngayGio = jngaygio.getText().trim();
+
+
+
+        String giaNhapText = jgianhap.getText().replaceAll(",", "");
+
+        // Kiểm tra nếu chuỗi không rỗng trước khi chuyển đổi
+        if (!giaNhapText.isEmpty()) {
+            try {
+                double giaNhap = Double.parseDouble(giaNhapText);
+
+                // Lấy giá trị của isMoi từ jCheckBox1.isSelected()
+                boolean isMoi = jCheckBox1.isSelected();
+
+                // Tạo một đối tượng VehicleData mới
+                VehicleData newVehicle = new VehicleData(tenXe, hangXe, "", giaNhap, isMoi);
+
+                // Thêm đối tượng vào ArrayList
+                vehicleList.add(newVehicle);
+                updateTable();
+                JOptionPane.showMessageDialog(this, "Thêm mới thành công!");
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Lỗi: Giá nhập không hợp lệ!");
+                ex.printStackTrace();  // In chi tiết lỗi vào console (hoặc thay thế bằng logging)
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Lỗi khi thêm mới: " + ex.getMessage());
+                ex.printStackTrace();  // In chi tiết lỗi vào console (hoặc thay thế bằng logging)
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Lỗi: Vui lòng nhập giá nhập!");
+        }
     }
+    private void updateTable() {
+        // Xóa tất cả các hàng hiện có trong bảng
+        DefaultTableModel model = (DefaultTableModel) jTable.getModel();
+        model.setRowCount(0);
+
+        // Thêm lại tất cả các dòng từ danh sách xe vào bảng
+        for (VehicleData vehicle : vehicleList) {
+            String loai = vehicle.isMoi() ? "mới" : "cũ" ;
+            Object[] rowData = {
+                    vehicle.getTenXe(),
+                    vehicle.getHangXe(),
+                    vehicle.getNgayGio(),
+                    vehicle.getGiaNhap(),
+                    loai
+            };
+            model.addRow(rowData);
+        }
+    }
+
 
     private void jxoaActionPerformed(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
+        int selectedRow = jTable.getSelectedRow();
+
+        // Kiểm tra xem có dòng được chọn hay không
+        if (selectedRow != -1) {
+            // Xóa dòng được chọn từ danh sách
+            vehicleList.remove(selectedRow);
+
+            // Cập nhật bảng
+            updateTable();
+        } else {
+            // Hiển thị thông báo nếu không có dòng nào được chọn
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một dòng để xóa.", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        }
     }
 
+
     private void capnhapActionPerformed(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
+        int selectedRow = jTable.getSelectedRow();
+
+        if (selectedRow != -1) {
+            // Lấy thông tin từ các ô đầu vào
+            String tenXe = jtenxe.getText();
+            String hangXe = jComboBox1.getSelectedItem().toString();
+            String ngayGio = jngaygio.getText();
+            double giaNhap = Double.parseDouble(jgianhap.getText().replaceAll(",", ""));
+            boolean isMoi = jCheckBox1.isSelected();
+
+            // Cập nhật thông tin của hàng đã chọn trong ArrayList
+            VehicleData selectedVehicle = vehicleList.get(selectedRow);
+            selectedVehicle.setTenXe(tenXe);
+            selectedVehicle.setHangXe(hangXe);
+            selectedVehicle.setNgayGio(ngayGio);
+            selectedVehicle.setGiaNhap(giaNhap);
+            selectedVehicle.setMoi(isMoi);
+
+            // Cập nhật bảng
+            updateTable();
+
+            // Hiển thị thông báo cập nhật thành công
+            JOptionPane.showMessageDialog(this, "Cập nhật thành công!");
+        } else {
+            // Hiển thị thông báo nếu không có dòng nào được chọn
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một dòng để cập nhật.", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    private void jnhapmoiActionPerformed(java.awt.event.ActionEvent evt) {
+        // Xóa nội dung trong các ô đầu vào
+        jtenxe.setText("");
+        jComboBox1.setSelectedIndex(0); // Chọn mục đầu tiên trong danh sách
+        jgianhap.setValue(0.0); // Đặt giá trị mặc định hoặc có thể để trống tùy thuộc vào yêu cầu
+        jCheckBox1.setSelected(false);
+        jCheckBox2.setSelected(false);
+    }
+
+    private void jCheckBox1ActionPerformed (java.awt.event.ActionEvent evt) {
+
+        if (jCheckBox1.isSelected()) {
+            jCheckBox2.setSelected(false);
+        }
     }
 
     private void jCheckBox2ActionPerformed(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
+        if (jCheckBox2.isSelected()) {
+            jCheckBox1.setSelected(false);
+        }
     }
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {
