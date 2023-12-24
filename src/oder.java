@@ -7,6 +7,74 @@
  *
  * @author conbotngungoc
  */
+class oderdata extends input {
+        private String tenKhachHang;
+        private String soDienThoai;
+        private String diaChi;
+        private String ngayGio;
+        private double giaBan;
+        private boolean isMoi;
+
+        // Constructors
+        public oderdata(String tenKhachHang, String soDienThoai, String diaChi, String ngayGio, double giaBan, boolean isMoi) {
+            this.tenKhachHang = tenKhachHang;
+            this.soDienThoai = soDienThoai;
+            this.diaChi = diaChi;
+            this.ngayGio = ngayGio;
+            this.giaBan = giaBan;
+            this.isMoi = isMoi;
+        }
+
+        // Getters and Setters (Alt + Insert in NetBeans to generate them)
+
+        public String getTenKhachHang() {
+            return tenKhachHang;
+        }
+
+        public void setTenKhachHang(String tenKhachHang) {
+            this.tenKhachHang = tenKhachHang;
+        }
+
+        public String getSoDienThoai() {
+            return soDienThoai;
+        }
+
+        public void setSoDienThoai(String soDienThoai) {
+            this.soDienThoai = soDienThoai;
+        }
+
+        public String getDiaChi() {
+            return diaChi;
+        }
+
+        public void setDiaChi(String diaChi) {
+            this.diaChi = diaChi;
+        }
+
+        public String getNgayGio() {
+            return ngayGio;
+        }
+
+        public void setNgayGio(String ngayGio) {
+            this.ngayGio = ngayGio;
+        }
+
+        public double getGiaBan() {
+            return giaBan;
+        }
+
+        public void setGiaBan(double giaBan) {
+            this.giaBan = giaBan;
+        }
+
+        public boolean isMoi() {
+            return isMoi;
+        }
+
+        public void setMoi(boolean moi) {
+            isMoi = moi;
+        }
+    }
 public class oder extends javax.swing.JFrame {
 
     /**
