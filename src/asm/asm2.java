@@ -27,7 +27,6 @@ class VehicleData {
     private double giaBan;
     private boolean isNew;
 
-    // Constructors
     public VehicleData(String tenKhachHang, String dongXe, String ngayGio, double giaBan, boolean isNew) {
         this.tenKhachHang = tenKhachHang;
         this.dongXe = dongXe;
@@ -36,7 +35,7 @@ class VehicleData {
         this.isNew = isNew;
     }
 
-    // Getters and Setters (Alt + Insert in NetBeans to generate them)
+
 
     public String getTenKhachHang() {
         return tenKhachHang;
@@ -114,11 +113,10 @@ public class asm2 extends javax.swing.JFrame {
         });
     }
     private void displaySelectedRowInfo(int selectedRow) {
-        // Lấy thông tin của hàng đã chọn
-        // Lấy thông tin của hàng đã chọn
+
         VehicleData selectedVehicle = vehicleList.get(selectedRow);
 
-        // Hiển thị thông tin vào các ô tương ứng
+
         jtenkhachang.setText(selectedVehicle.getTenKhachHang());
         jComboBox1.setSelectedItem(selectedVehicle.getDongXe());
         jTextField1.setText(selectedVehicle.getNgayGio());
@@ -461,36 +459,30 @@ public class asm2 extends javax.swing.JFrame {
         return str.matches("^[a-zA-Z ]+$");
     }
     private boolean isValidDate(String date) {
-        String regex = "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/(\\\\d{2}|\\\\d{4})$";
+        String regex = "^(0[1-9]|[1-2][0-9]|3[0-1])/(0[1-9]|1[0-2])/(\\d{2}|\\d{4})$";
+
         return date.matches(regex);
     }
     private void jthemActionPerformed(java.awt.event.ActionEvent evt) {
 
         String tenKhachHang = jtenkhachang.getText();
         if (!isAlpha(tenKhachHang)) {
-            // Tên không hợp lệ, hiển thị thông báo lỗi
             JOptionPane.showMessageDialog(this, "Tên không hợp lệ! Hãy chỉ nhập chữ cái.");
-            return;  // Thoát khỏi phương thức nếu tên không hợp lệ
+            return;
         }
 
         String dongXe = jComboBox1.getSelectedItem().toString();
         String ngayGioText = jTextField1.getText();
-        if ( isValidDate(ngayGioText)) {
+        if (!isValidDate(ngayGioText)) {
             JOptionPane.showMessageDialog(this, "Ngày giờ không hợp lệ! Hãy nhập theo định dạng dd/MM/yyyy.");
             return;
         }
-
-        String giaBanText = jgiaca.getText().replaceAll(",", "");
-
-        // Kiểm tra nếu chuỗi không rỗng trước khi chuyển đổi
+        String giaBanText = jgiaca.getText().replaceAll("", "");
+        // kiểm tra gia bán có giá trị hay không
         if (!giaBanText.isEmpty()) {
             try {
                 double giaBan = Double.parseDouble(giaBanText);
-
-                // Lấy giá trị của isNew từ jCheckBox1.isSelected()
                 boolean isNew = jCheckBox1.isSelected();
-
-                // Tạo một đối tượng VehicleData mới
                 VehicleData newVehicle = new VehicleData(tenKhachHang, dongXe, ngayGioText, giaBan, isNew);
 
                 // Thêm đối tượng vào ArrayList
@@ -499,10 +491,7 @@ public class asm2 extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Thêm mới thành công!");
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Lỗi: Giá bán không hợp lệ!");
-                ex.printStackTrace();  // In chi tiết lỗi vào console (hoặc thay thế bằng logging)
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Lỗi khi thêm mới: " + ex.getMessage());
-                ex.printStackTrace();  // In chi tiết lỗi vào console (hoặc thay thế bằng logging)
+                ex.printStackTrace();
             }
         } else {
             JOptionPane.showMessageDialog(this, "Lỗi: Vui lòng nhập giá bán!");
@@ -546,36 +535,58 @@ public class asm2 extends javax.swing.JFrame {
         int selectedRow = jTable.getSelectedRow();
 
         if (selectedRow != -1) {
-            // Lấy thông tin từ các ô đầu vào
-            String tenKhachHang = jtenkhachang.getText();
-            String dongXe = jComboBox1.getSelectedItem().toString();
-            String ngayGio = jTextField1.getText();
-            double giaBan = Double.parseDouble(jgiaca.getText().replaceAll(",", ""));
-            boolean isNew = jCheckBox1.isSelected();
+            try {
+                // Lấy thông tin từ các ô đầu vào
+                String tenKhachHang = jtenkhachang.getText();
+                String dongXe = jComboBox1.getSelectedItem().toString();
+                String ngayGio = jTextField1.getText();
+                String giaBanText = jgiaca.getText().replaceAll("", "");
+                boolean isNew = jCheckBox1.isSelected();
+                if (!isAlpha(tenKhachHang)) {
+                    JOptionPane.showMessageDialog(this, "Tên không hợp lệ! Hãy chỉ nhập chữ cái.");
+                    return;
+                }
 
-            // Cập nhật thông tin của hàng đã chọn trong ArrayList
-            VehicleData selectedVehicle = vehicleList.get(selectedRow);
-            selectedVehicle.setTenKhachHang(tenKhachHang);
-            selectedVehicle.setDongXe(dongXe);
-            selectedVehicle.setNgayGio(ngayGio);
-            selectedVehicle.setGiaBan(giaBan);
-            selectedVehicle.setNew(isNew);
+                if (!isValidDate(ngayGio)) {
+                    JOptionPane.showMessageDialog(this, "Ngày giờ không hợp lệ! Hãy nhập theo định dạng dd/MM/yyyy.");
+                    return;
+                }
 
-            // Cập nhật bảng
-            updateTable();
+                // Kiểm tra hợp lệ của giá bán
+                if (!giaBanText.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Lỗi: Vui lòng nhập giá bán hợp lệ!");
+                    return;
+                }
+                double giaBan = Double.parseDouble(giaBanText);
 
-            // Hiển thị thông báo cập nhật thành công
+
+                // Cập nhật thông tin của hàng đã chọn trong ArrayList
+                VehicleData selectedVehicle = vehicleList.get(selectedRow);
+                selectedVehicle.setTenKhachHang(tenKhachHang);
+                selectedVehicle.setDongXe(dongXe);
+                selectedVehicle.setNgayGio(ngayGio);
+                selectedVehicle.setGiaBan(giaBan);
+                selectedVehicle.setNew(isNew);
+
+                // Cập nhật bảng
+                updateTable();
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Lỗi: Giá bán không hợp lệ!");
+                ex.printStackTrace();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật: " + ex.getMessage());
+                ex.printStackTrace();
+            }
             JOptionPane.showMessageDialog(this, "Cập nhật thành công!");
         } else {
-            // Hiển thị thông báo nếu không có dòng nào được chọn
             JOptionPane.showMessageDialog(this, "Vui lòng chọn một dòng để cập nhật.", "Thông báo", JOptionPane.WARNING_MESSAGE);
         }
     }
     private void jnhapmoiActionPerformed(java.awt.event.ActionEvent evt) {
         // Xóa nội dung trong các ô đầu vào
         jtenkhachang.setText("");
-        jComboBox1.setSelectedIndex(0); // Chọn mục đầu tiên trong danh sách
-        jgiaca.setValue(0.0); // Đặt giá trị mặc định hoặc có thể để trống tùy thuộc vào yêu cầu
+        jComboBox1.setSelectedIndex(0);
+        jgiaca.setValue(0.0);
         jTextField1.setText("");
         jCheckBox1.setSelected(false);
         jCheckBox2.setSelected(false);
